@@ -57,7 +57,7 @@ func RunCLI() int {
 	errs := ValidateConfig(conf)
 	if len(errs) > 0 {
 		for _, err := range errs {
-			fmt.Println(err)
+			fmt.Fprintln(os.Stderr, err)
 		}
 		return 1
 	}

@@ -84,6 +84,26 @@ func TestValidateConfig_ReturnsErrorsWhenMissingRequiredParameters(t *testing.T)
 	}
 }
 
+func TestGenerateScaffold(t *testing.T) {
+	t.Parallel()
+	buf := new(bytes.Buffer)
+	conf := scaffoldgen.Config{
+		Name:            "project1",
+		Directory:       "./project1",
+		Repository:      "github.com/username/project1",
+		HasStaticAssets: false,
+	}
+	err := scaffoldgen.GenerateScaffold(buf, conf)
+	if err != nil {
+		t.Fatal("didn't expect an error", err)
+	}
+	want := "Generating project1 scaffold at ./project1...\n"
+	got := buf.String()
+	if !cmp.Equal(want, got) {
+		t.Error(cmp.Diff(want, got))
+	}
+}
+
 func mapErrorsToStrings(t testing.TB, errs []error) []string {
 	t.Helper()
 	result := []string{}

@@ -16,10 +16,10 @@ type Config struct {
 	HasStaticAssets bool
 }
 
-func SetupParseFlags(out io.Writer, args []string) (Config, error) {
+func SetupParseFlags(w io.Writer, args []string) (Config, error) {
 	var conf Config
 	fs := flag.NewFlagSet("scaffoldgen", flag.ContinueOnError)
-	fs.SetOutput(out)
+	fs.SetOutput(w)
 	fs.StringVar(&conf.Name, "n", "", "Project name")
 	fs.StringVar(&conf.Directory, "d", "", "Project location on disk")
 	fs.StringVar(&conf.Repository, "r", "", "Project remote repository URL")
@@ -49,6 +49,11 @@ func ValidateConfig(conf Config) []error {
 	return errs
 }
 
+func GenerateScaffold(w io.Writer, conf Config) error {
+	fmt.Fprintf(w, "Generating %s scaffold at %s...\n", conf.Name, conf.Directory)
+	return nil
+}
+
 func RunCLI() int {
 	conf, err := SetupParseFlags(os.Stdout, os.Args[1:])
 	if err != nil {
@@ -60,6 +65,9 @@ func RunCLI() int {
 		}
 		return 1
 	}
-	fmt.Printf("%#v\n", conf)
+	if err := GenerateScaffold(os.Stdout, conf); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		return 1
+	}
 	return 0
 }
